@@ -44,10 +44,10 @@ module OmniAuth
         end
       end
 
-      uid{ raw_info['data']['id'] }
+      uid{ raw_info.dig('data','id') }
 
       info do
-        { :user_type => raw_info['type'] }.merge(raw_info['data']).merge(raw_user_info['data'])
+        { :user_type => raw_info['type'] }.merge(raw_info['data'] || {}).merge(raw_user_info['data'] || {})
       end
 
       extra do
@@ -58,23 +58,27 @@ module OmniAuth
       end
 
       def raw_info
-        @raw_info ||= access_token.get('/me').parsed
+        @raw_info ||= _raw_info
+      end
+
+      def _raw_info
+        access_token.get('/v2.1/me').parsed
       end
 
       def raw_user_info
-        return @raw_user_info if @raw_user_info
+        @raw_user_info ||= _raw_user_info
+      end
 
-        @raw_user_info = {}
-
+      def _raw_user_info
         if options.get_user_info
           user_type = raw_info['type']
-          user_id = raw_info['data']['id']
+          user_id = raw_info.dig('data','id')
           if user_type && user_id
-            @raw_user_info = access_token.get("/v1.1/#{user_type}s/#{user_id}").parsed
+            return access_token.get("/v2.1/#{user_type}s/#{user_id}").parsed
           end
         end
 
-        @raw_user_info
+        {}
       end
 
       # Fix unknown redirect uri bug by NOT appending the query string to the callback url.
