@@ -6,7 +6,7 @@ Unofficial OmniAuth strategy for [Clever SSO OAuth2](https://dev.clever.com/sso)
 
 Add the gem to your application's Gemfile:
 
-    gem 'omniauth-clever', '~> 1.2.1'
+    gem 'omniauth-clever', git: 'https://github.com/Pioneer-Valley-Books/omniauth-clever.git', :branch => "clever-api-v3.0"
 
 And then execute:
 
@@ -24,7 +24,7 @@ Example: In `config/initializers/omniauth.rb`, do:
 
 ```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :clever, ENV['CLEVER_CLIENT_ID'], ENV['CLEVER_CLIENT_SECRET']
+  provider :clever, ENV['CLEVER_CLIENT_ID'], ENV['CLEVER_CLIENT_SECRET'], get_user_info: true
 end
 ```
 
