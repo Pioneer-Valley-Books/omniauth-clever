@@ -4,6 +4,7 @@ require 'base64'
 module OmniAuth
   module Strategies
     class Clever < OmniAuth::Strategies::OAuth2
+      API_VERSION = 'v3.0'
       # Clever is a unique OAuth 2.0 service provider in that login sequences
       # are often initiated by Clever, not the client. When Clever initiates
       # login, a state parameter is not relevant nor sent.
@@ -62,7 +63,7 @@ module OmniAuth
       end
 
       def _raw_info
-        access_token.get('/v2.1/me').parsed
+        access_token.get("/#{API_VERSION}/me").parsed
       end
 
       def raw_user_info
@@ -71,10 +72,9 @@ module OmniAuth
 
       def _raw_user_info
         if options.get_user_info
-          user_type = raw_info['type']
           user_id = raw_info.dig('data','id')
-          if user_type && user_id
-            return access_token.get("/v2.1/#{user_type}s/#{user_id}").parsed
+          if user_id
+            return access_token.get("/#{API_VERSION}/users/#{user_id}").parsed
           end
         end
 
